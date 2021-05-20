@@ -1,17 +1,16 @@
 package org.itcluster11.commands;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 abstract public class ServiceCommand extends BotCommand {
-    private final Logger logger = Logger.getLogger(ServiceCommand.class.getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(ServiceCommand.class);
 
     ServiceCommand(String identifier, String description) {
         super(identifier, description);
@@ -25,7 +24,7 @@ abstract public class ServiceCommand extends BotCommand {
         try {
             absSender.execute(message);
         } catch (TelegramApiException e) {
-            logger.log(Level.WARNING, String.format("Warning %s. Command %s. User: %s", e.getMessage(), commandName, userName));
+            logger.error(String.format("Warning %s. Command %s. User: %s", e.getMessage(), commandName, userName), e);
             e.printStackTrace();
         }
     }

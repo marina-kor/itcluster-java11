@@ -1,14 +1,14 @@
 package org.itcluster11.commands;
 
 import org.itcluster11.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-import java.util.logging.Logger;
-
 public class HelpCommand extends ServiceCommand {
-    private final Logger logger = Logger.getLogger(HelpCommand.class.getSimpleName());
+    private final Logger logger = LoggerFactory.getLogger(HelpCommand.class);
 
     public HelpCommand(String identifier, String description) {
         super(identifier, description);
