@@ -1,8 +1,8 @@
-package org.itcluster11.bots;
+package org.itcluster11.telegram.bots;
 
 import lombok.extern.slf4j.Slf4j;
-import org.itcluster11.commands.HelpCommand;
-import org.itcluster11.commands.StartCommand;
+import org.itcluster11.telegram.commands.HelpCommand;
+import org.itcluster11.telegram.commands.StartCommand;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
