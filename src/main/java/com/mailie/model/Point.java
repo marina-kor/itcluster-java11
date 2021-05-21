@@ -8,10 +8,11 @@ import java.util.List;
 @Data
 @Setter
 public class Point {
+    private int id;
     private String name;
     private String description;
     private String longitude;
     private String latitude;
     private List<PointCategory> categories;
-    
+
 }
