@@ -1,6 +1,6 @@
-package org.itcluster11.commands;
+package org.itcluster11.telegram.commands;
 
-import org.itcluster11.services.UserService;
+import org.itcluster11.telegram.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

@@ -1,4 +1,4 @@
-package org.itcluster11.commands;
+package org.itcluster11.telegram.commands;
 
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.bots.AbsSender;

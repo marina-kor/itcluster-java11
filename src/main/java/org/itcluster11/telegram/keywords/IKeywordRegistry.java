@@ -1,4 +1,4 @@
-package org.itcluster11.keywords;
+package org.itcluster11.telegram.keywords;
 
 import java.util.Collection;
 
