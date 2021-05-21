@@ -1,18 +1,16 @@
 package org.itcluster11.bots;
 
+import lombok.extern.slf4j.Slf4j;
 import org.itcluster11.commands.HelpCommand;
 import org.itcluster11.commands.StartCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-
+@Slf4j
 public class MailieBot extends TelegramLongPollingCommandBot {
-    private final Logger logger = LoggerFactory.getLogger(MailieBot.class);
 
     public MailieBot() {
         var replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -27,7 +25,7 @@ public class MailieBot extends TelegramLongPollingCommandBot {
     public void processNonCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            logger.info("Received message: {}", text);
+            log.info("Received message: {}", text);
             var chatId = update.getMessage().getChatId().toString();
             sendAnswer(chatId, text);
         }
@@ -37,7 +35,7 @@ public class MailieBot extends TelegramLongPollingCommandBot {
     public void processInvalidCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            logger.info("Received message: {}", text);
+            log.info("Received message: {}", text);
             var chatId = update.getMessage().getChatId().toString();
             sendAnswer(chatId, "Вибач, я не можу на це відповісти \uD83D\uDE05");
         }
@@ -50,9 +48,9 @@ public class MailieBot extends TelegramLongPollingCommandBot {
         message.setText(text);
         try {
             execute(message);
-            logger.info("Message sent: {}", message.getText());
+            log.info("Message sent: {}", message.getText());
         } catch (TelegramApiException e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
