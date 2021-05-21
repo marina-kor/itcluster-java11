@@ -12,10 +12,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
 public class MailieBot extends TelegramLongPollingCommandBot {
-    private final Logger logger = LoggerFactory.getLogger(HelpCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(MailieBot.class);
 
     public MailieBot() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        var replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(true);
         replyKeyboardMarkup.setSelective(true);
@@ -27,8 +27,8 @@ public class MailieBot extends TelegramLongPollingCommandBot {
     public void processNonCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            logger.info("Received message: " + text);
-            String chatId = update.getMessage().getChatId().toString();
+            logger.info("Received message: {}", text);
+            var chatId = update.getMessage().getChatId().toString();
             sendAnswer(chatId, text);
         }
     }
@@ -37,20 +37,20 @@ public class MailieBot extends TelegramLongPollingCommandBot {
     public void processInvalidCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            logger.info("Received message: " + text);
-            String chatId = update.getMessage().getChatId().toString();
+            logger.info("Received message: {}", text);
+            var chatId = update.getMessage().getChatId().toString();
             sendAnswer(chatId, "Вибач, я не можу на це відповісти \uD83D\uDE05");
         }
     }
 
     private void sendAnswer(String chatId, String text) {
-        SendMessage message = new SendMessage();
+        var message = new SendMessage();
         message.enableMarkdown(true);
         message.setChatId(chatId);
         message.setText(text);
         try {
             execute(message);
-            logger.info("Message sent: " + message.getText());
+            logger.info("Message sent: {}", message.getText());
         } catch (TelegramApiException e) {
             logger.error(e.getMessage());
         }
