@@ -37,7 +37,7 @@ public class MailieBot extends TelegramLongPollingCommandBot {
     public void processInvalidCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            System.out.println("Received message: " + text);
+            logger.info("Received message: " + text);
             String chatId = update.getMessage().getChatId().toString();
             sendAnswer(chatId, "Вибач, я не можу на це відповісти \uD83D\uDE05");
         }
@@ -63,7 +63,6 @@ public class MailieBot extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotToken() {
-        String BOT_TOKEN = "1729304112:AAHEM1sI3qbXqtpHA920RwbvZ312znp-3ls";
-        return BOT_TOKEN;
+        return "1729304112:AAHEM1sI3qbXqtpHA920RwbvZ312znp-3ls";
     }
 }
