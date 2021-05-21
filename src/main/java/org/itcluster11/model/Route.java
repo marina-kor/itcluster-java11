@@ -1,9 +1,10 @@
-package com.mailie.model;
+package org.itcluster11.model;
 
 import lombok.Data;
 import lombok.Setter;
 
 import java.util.List;
+
 @Data
 @Setter
 public class Route {

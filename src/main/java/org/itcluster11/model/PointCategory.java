@@ -1,4 +1,4 @@
-package com.mailie.model;
+package org.itcluster11.model;
 
 import lombok.Data;
 import lombok.Setter;

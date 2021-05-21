@@ -1,12 +1,13 @@
-package com.mailie.model;
+package org.itcluster11.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
 
 import java.util.List;
 
 @Data
-@Setter
+@Builder
 public class Point {
     private int id;
     private String name;

@@ -1,28 +1,27 @@
-package com.mailie.dao;
+package org.itcluster11.repository;
 
-import com.mailie.model.Point;
+import lombok.extern.slf4j.Slf4j;
+import org.itcluster11.model.Point;
+import org.itcluster11.util.SqlQueries;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PointDAO {
-    String dbURL = "jdbc:mysql://localhost:3306/Mailie_db?useSSL=false";
+@Slf4j
+public class PointRepository {
+    String dbURL = "jdbc:mysql://localhost:3306/sandbox?useSSL=false";
     String username = "root";
     String password = "root";
 
-
-    public void insertPoint(Point point) {
+    public void save(Point point) {
         try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
 
-
-            String sql = "INSERT INTO Point (name, description, latitude, longitude) VALUES (?, ?, ?, ?)";
-
-            PreparedStatement statement = conn.prepareStatement(sql);
+            PreparedStatement statement = conn.prepareStatement(SqlQueries.INSERT_POINT_SQL);
             statement.setString(1, point.getName());
             statement.setString(2, point.getDescription());
             statement.setString(3, point.getLatitude());
@@ -32,15 +31,12 @@ public class PointDAO {
             if (rowsInserted > 0) {
                 System.out.println("A new point was inserted successfully!");
             }
-
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Point was not inserted to database", e);
         }
-
     }
 
-    public List<Point> selectPoint() {
+    public List<Point> findAll() {
         List<Point> points = new ArrayList<Point>();
 
         try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
@@ -48,10 +44,8 @@ public class PointDAO {
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "SELECT id, name,description, latitude, longitude  FROM Point";
-
             Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery(sql);
+            ResultSet result = statement.executeQuery(SqlQueries.FIND_ALL_POINTS_SQL);
 
             int count = 0;
 
@@ -64,27 +58,28 @@ public class PointDAO {
 
                 String output = "User #%d: %s - %s - %s - %s";
                 //  System.out.println(String.format(output, ++count, name, description, latitude, longitude));
-                Point point = new Point();
-                point.setId(id);
-                point.setName(name);
-                point.setDescription(description);
-                point.setLatitude(latitude);
-                point.setLongitude(longitude);
+                Point point = Point.builder()
+                        .id(id)
+                        .name(name)
+                        .description(description)
+                        .latitude(latitude)
+                        .longitude(longitude)
+                        .build();
                 points.add(point);
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
         return points;
     }
 
-    public Point selectPointByID(int pointid) {
+    public Point findById(int pointid) {
         try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "SELECT id, name,description, latitude, longitude  FROM Point Where id = ?";
+            String sql = "SELECT id, name,description, latitude, longitude  FROM Points Where id = ?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setInt(1, pointid);
             ResultSet result = statement.executeQuery();
@@ -100,12 +95,13 @@ public class PointDAO {
 
                 String output = "User #%d: %s - %s - %s - %s";
                 //  System.out.println(String.format(output, ++count, name, description, latitude, longitude));
-                Point point = new Point();
-                point.setId(id);
-                point.setName(name);
-                point.setDescription(description);
-                point.setLatitude(latitude);
-                point.setLongitude(longitude);
+                Point point = Point.builder()
+                        .id(id)
+                        .name(name)
+                        .description(description)
+                        .latitude(latitude)
+                        .longitude(longitude)
+                        .build();
                 return point;
             }
         } catch (SQLException ex) {
@@ -114,13 +110,13 @@ public class PointDAO {
         return null;
     }
 
-    public void updatePoint(Point point) {
+    public void update(Point point) {
         try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "UPDATE Point SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
+            String sql = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
 
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, point.getName());
@@ -139,13 +135,13 @@ public class PointDAO {
         }
     }
 
-    public void deletePoint(int id) {
+    public void delete(int id) {
         try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "DELETE FROM Point WHERE id=?";
+            String sql = "DELETE FROM Points WHERE id=?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setInt(1, id);
 
