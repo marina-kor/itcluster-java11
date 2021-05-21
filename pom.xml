@@ -17,10 +17,27 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lombok.version>1.18.20</lombok.version>
+<<<<<<< HEAD
         <telegram.version>5.2.0</telegram.version>
+=======
+        <apache.poi.version>4.1.2</apache.poi.version>
+        <telegram.version>5.1.1</telegram.version>
+>>>>>>> 5c0b9f414337badcc052167360395263be86615b
     </properties>
 
     <dependencies>
+        <!-- Telegram API -->
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots</artifactId>
+            <version>${telegram.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambotsextensions</artifactId>
+            <version>${telegram.version}</version>
+        </dependency>
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
