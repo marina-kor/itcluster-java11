@@ -17,8 +17,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lombok.version>1.18.20</lombok.version>
-        <apache.poi.version>4.1.2</apache.poi.version>
-        <telegram.version>5.1.1</telegram.version>
+        <telegram.version>5.2.0</telegram.version>
     </properties>
 
     <dependencies>

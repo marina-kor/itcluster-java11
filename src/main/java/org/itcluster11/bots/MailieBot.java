@@ -2,34 +2,32 @@ package org.itcluster11.bots;
 
 import org.itcluster11.commands.HelpCommand;
 import org.itcluster11.commands.StartCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
 public class MailieBot extends TelegramLongPollingCommandBot {
-    private static MailieBot MAILIE_BOT;
+    private final Logger logger = LoggerFactory.getLogger(HelpCommand.class);
 
-    private MailieBot() {
+    public MailieBot() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
+        replyKeyboardMarkup.setSelective(true);
+        register(new StartCommand("start", "getting started with the bot", replyKeyboardMarkup));
         register(new HelpCommand("help", "shows all commands. Use /help [command] for more info"));
-        register(new StartCommand("start", "getting started with the bot"));
-    }
-
-    public static MailieBot getInstance() {
-        synchronized (MailieBot.class) {
-            if (MAILIE_BOT == null) {
-                MAILIE_BOT = new MailieBot();
-            }
-            return MAILIE_BOT;
-        }
     }
 
     @Override
     public void processNonCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String text = update.getMessage().getText();
-            System.out.println("Received message: " + text);
+            logger.info("Received message: " + text);
             String chatId = update.getMessage().getChatId().toString();
             sendAnswer(chatId, text);
         }
@@ -52,9 +50,9 @@ public class MailieBot extends TelegramLongPollingCommandBot {
         message.setText(text);
         try {
             execute(message);
-            System.out.println("Message sent: " + message.getText());
+            logger.info("Message sent: " + message.getText());
         } catch (TelegramApiException e) {
-            System.err.println(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 

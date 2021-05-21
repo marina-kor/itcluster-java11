@@ -10,7 +10,7 @@ public class App {
     public static void main(String[] args) {
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(MailieBot.getInstance());
+            botsApi.registerBot(new MailieBot());
         } catch (TelegramApiException exc) {
             exc.printStackTrace();
         }
