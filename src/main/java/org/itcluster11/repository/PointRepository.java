@@ -2,7 +2,7 @@ package org.itcluster11.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.itcluster11.model.Point;
-import org.itcluster11.util.SqlQueries;
+import org.itcluster11.util.ConnectionProvider;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,18 +10,21 @@ import java.util.List;
 
 @Slf4j
 public class PointRepository {
-    String dbURL = "jdbc:mysql://localhost:3306/sandbox?useSSL=false";
-    String username = "root";
-    String password = "root";
+    private String INSERT_POINT_SQL = "INSERT INTO Points (name, description, latitude, longitude) VALUES (?, ?, ?, ?)";
+    private String FIND_ALL_POINTS_SQL = "SELECT id, name,description, latitude, longitude FROM Points";
+    private String SELECT_POINT_SQL = "SELECT id, name,description, latitude, longitude  FROM Points Where id = ?";
+    private String UPDATE_POINT_SQL = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
+    private String DELETE_POINT_SQL = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
+
 
     public void save(Point point) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
 
-            PreparedStatement statement = conn.prepareStatement(SqlQueries.INSERT_POINT_SQL);
+            PreparedStatement statement = conn.prepareStatement(INSERT_POINT_SQL);
             statement.setString(1, point.getName());
             statement.setString(2, point.getDescription());
             statement.setString(3, point.getLatitude());
@@ -39,13 +42,13 @@ public class PointRepository {
     public List<Point> findAll() {
         List<Point> points = new ArrayList<Point>();
 
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
             Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery(SqlQueries.FIND_ALL_POINTS_SQL);
+            ResultSet result = statement.executeQuery(FIND_ALL_POINTS_SQL);
 
             int count = 0;
 
@@ -74,13 +77,12 @@ public class PointRepository {
     }
 
     public Point findById(int pointid) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "SELECT id, name,description, latitude, longitude  FROM Points Where id = ?";
-            PreparedStatement statement = conn.prepareStatement(sql);
+            PreparedStatement statement = conn.prepareStatement(SELECT_POINT_SQL);
             statement.setInt(1, pointid);
             ResultSet result = statement.executeQuery();
 
@@ -111,14 +113,14 @@ public class PointRepository {
     }
 
     public void update(Point point) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
 
-            PreparedStatement statement = conn.prepareStatement(sql);
+
+            PreparedStatement statement = conn.prepareStatement(UPDATE_POINT_SQL);
             statement.setString(1, point.getName());
             statement.setString(2, point.getDescription());
             statement.setString(3, point.getLatitude());
@@ -136,13 +138,13 @@ public class PointRepository {
     }
 
     public void delete(int id) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "DELETE FROM Points WHERE id=?";
-            PreparedStatement statement = conn.prepareStatement(sql);
+
+            PreparedStatement statement = conn.prepareStatement(DELETE_POINT_SQL);
             statement.setInt(1, id);
 
             int rowsUpdated = statement.executeUpdate();
