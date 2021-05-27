@@ -19,4 +19,12 @@ CREATE TABLE Category (
     `description` text,
     PRIMARY KEY (`id`)
 );
+
+CREATE TABLE PointToCategory ( 
+    `point_id` int NOT NULL ,
+    `category_id` int NOT NULL ,
+    FOREIGN KEY (point_id) REFERENCES Points (id),
+    FOREIGN KEY (category_id) REFERENCES Category (id)
+    
+)
 ```

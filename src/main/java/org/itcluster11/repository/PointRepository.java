@@ -15,6 +15,7 @@ public class PointRepository {
     private String SELECT_POINT_SQL = "SELECT id, name,description, latitude, longitude  FROM Points Where id = ?";
     private String UPDATE_POINT_SQL = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
     private String DELETE_POINT_SQL = "DELETE FROM Points WHERE  id=?";
+    private String LINK_POINT_TO_CATEGORY = "INSERT INTO PointToCategory (point_id , category_id) VALUES (?, ?)";
 
 
     public void save(Point point) {
@@ -106,8 +107,8 @@ public class PointRepository {
                         .build();
                 return point;
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
         return null;
     }
@@ -132,8 +133,8 @@ public class PointRepository {
                 System.out.println("An existing point was updated successfully!");
             }
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
     }
 
@@ -152,9 +153,25 @@ public class PointRepository {
                 System.out.println("An existing point was deleted successfully!");
             }
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
+    }
 
+    public void linkCategoryToPoint(int point_id, int category_id) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+            PreparedStatement statement = conn.prepareStatement(LINK_POINT_TO_CATEGORY);
+            statement.setInt(1, point_id);
+            statement.setInt(2, category_id);
+            ResultSet result = statement.executeQuery();
+
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
+
+        }
     }
 }
