@@ -14,7 +14,7 @@ public class PointRepository {
     private String FIND_ALL_POINTS_SQL = "SELECT id, name,description, latitude, longitude FROM Points";
     private String SELECT_POINT_SQL = "SELECT id, name,description, latitude, longitude  FROM Points Where id = ?";
     private String UPDATE_POINT_SQL = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
-    private String DELETE_POINT_SQL = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
+    private String DELETE_POINT_SQL = "DELETE FROM Points WHERE  id=?";
 
 
     public void save(Point point) {

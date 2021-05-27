@@ -14,7 +14,7 @@ public class CategoryRepository {
     private String FIND_ALL_CATEGORIES_SQL = "SELECT id, name,description FROM Category";
     private String SELECT_CATEGORY_SQL = "SELECT id, name, description  FROM Category WHERE id = ?";
     private String UPDATE_CATEGORY_SQL = "UPDATE Category SET name=?, description=? WHERE id=?";
-    private String DELETE_CATEGORY_SQL = "UPDATE Category SET name=?, description=? WHERE id=?";
+    private String DELETE_CATEGORY_SQL = "DELETE FROM Category WHERE  id=?";
 
     public void save(Category category) {
         try (Connection conn = ConnectionProvider.getConnection()) {
