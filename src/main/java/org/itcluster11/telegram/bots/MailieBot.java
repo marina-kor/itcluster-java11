@@ -22,8 +22,8 @@ public class MailieBot extends TelegramLongPollingBot {
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(true);
         replyKeyboardMarkup.setSelective(true);
-        register(new StartCommand("start", "getting started with the bot"));
-        register(new HelpCommand("help", "shows all commands. Use /help [command] for more info"));
+        register(new StartCommand("/start", "getting started with the bot"));
+        register(new HelpCommand("/help", "shows all commands. Use /help [command] for more info"));
     }
 
 
