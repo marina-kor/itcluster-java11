@@ -1,4 +1,3 @@
-
 package org.itcluster11.telegram.commands;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ public class HelpCommand extends ServiceBotCommand {
     public HelpCommand(String identifier, String description) {
         super(identifier, description);
     }
+
 
     void sendAnswer(AbsSender absSender, Update update) {
         String userName = UserService.getUserName(update.getMessage());
