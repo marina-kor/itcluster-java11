@@ -93,8 +93,8 @@ public class CategoryRepository {
                         .build();
                 return category;
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
         return null;
     }
@@ -117,8 +117,8 @@ public class CategoryRepository {
                 System.out.println("An existing category was updated successfully!");
             }
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
     }
 
@@ -137,8 +137,8 @@ public class CategoryRepository {
                 System.out.println("An existing category was deleted successfully!");
             }
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
 
     }

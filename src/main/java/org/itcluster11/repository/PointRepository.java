@@ -1,6 +1,7 @@
 package org.itcluster11.repository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.itcluster11.model.Category;
 import org.itcluster11.model.Point;
 import org.itcluster11.util.ConnectionProvider;
 
@@ -16,6 +17,7 @@ public class PointRepository {
     private String UPDATE_POINT_SQL = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
     private String DELETE_POINT_SQL = "DELETE FROM Points WHERE  id=?";
     private String LINK_POINT_TO_CATEGORY = "INSERT INTO PointToCategory (point_id , category_id) VALUES (?, ?)";
+    private String FIND_LIST_CATEGORIES_OF_POINT = "SELECT c.* FROM Points JOIN PointToCategory ptc ON ptc.point_id = p.id JOIN Category c ON c.id = ptc.category_id WHERE p.id = ?";
 
 
     public void save(Point point) {
@@ -174,4 +176,35 @@ public class PointRepository {
 
         }
     }
+     public List<Category> getCategoryList(int point_id){
+        List<Category> categoryList=new ArrayList<>();
+
+         try (Connection conn = ConnectionProvider.getConnection()) {
+
+             if (conn != null) {
+                 System.out.println("Connected");
+             }
+             PreparedStatement statement = conn.prepareStatement(FIND_LIST_CATEGORIES_OF_POINT);
+             statement.setInt(1, point_id);
+             ResultSet result = statement.executeQuery();
+             while (result.next()) {
+                 int id = result.getInt("id");
+                 String name = result.getString("name");
+                 String description = result.getString("description");
+
+                 Category category = Category.builder()
+                         .id(id)
+                         .name(name)
+                         .description(description)
+                         .build();
+                 categoryList.add(category);
+             }
+
+         } catch (SQLException e) {
+             log.debug("Reason: ", e);
+
+         }return categoryList;
+
+     }
+
 }
