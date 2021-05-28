@@ -2,7 +2,6 @@ package org.itcluster11.model;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -14,6 +13,6 @@ public class Point {
     private String description;
     private String longitude;
     private String latitude;
-    private List<PointCategory> categories;
+    private List<Category> categories;
 
 }

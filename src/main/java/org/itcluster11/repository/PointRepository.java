@@ -1,8 +1,9 @@
 package org.itcluster11.repository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.itcluster11.model.Category;
 import org.itcluster11.model.Point;
-import org.itcluster11.util.SqlQueries;
+import org.itcluster11.util.ConnectionProvider;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,18 +11,25 @@ import java.util.List;
 
 @Slf4j
 public class PointRepository {
-    String dbURL = "jdbc:mysql://localhost:3306/sandbox?useSSL=false";
-    String username = "root";
-    String password = "root";
+    private String INSERT_POINT_SQL = "INSERT INTO Points (name, description, latitude, longitude) VALUES (?, ?, ?, ?)";
+    private String FIND_ALL_POINTS_SQL = "SELECT id, name,description, latitude, longitude FROM Points";
+    private String SELECT_POINT_SQL = "SELECT id, name,description, latitude, longitude  FROM Points Where id = ?";
+    private String UPDATE_POINT_SQL = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
+    private String DELETE_POINT_SQL = "DELETE FROM Points WHERE  id=?";
+    private String LINK_POINT_TO_CATEGORY = "INSERT INTO PointToCategory (point_id , category_id) VALUES (?, ?)";
+    private String FIND_LIST_CATEGORIES_OF_POINT = "SELECT c.* FROM Points p JOIN PointToCategory ptc ON ptc.point_id"+
+            " = p.id JOIN Category c ON c.id = ptc.category_id WHERE p.id = ?";
+    private String FIND_LIST_POINTS_OF_CATEGORY = "SELECT p.* FROM Category c JOIN PointToCategory ptc ON ptc.category_id"
+            +" = c.id JOIN Points p ON p.id = ptc.point_id WHERE c.id = ?";
 
     public void save(Point point) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
 
-            PreparedStatement statement = conn.prepareStatement(SqlQueries.INSERT_POINT_SQL);
+            PreparedStatement statement = conn.prepareStatement(INSERT_POINT_SQL);
             statement.setString(1, point.getName());
             statement.setString(2, point.getDescription());
             statement.setString(3, point.getLatitude());
@@ -39,13 +47,13 @@ public class PointRepository {
     public List<Point> findAll() {
         List<Point> points = new ArrayList<Point>();
 
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
             Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery(SqlQueries.FIND_ALL_POINTS_SQL);
+            ResultSet result = statement.executeQuery(FIND_ALL_POINTS_SQL);
 
             int count = 0;
 
@@ -74,13 +82,12 @@ public class PointRepository {
     }
 
     public Point findById(int pointid) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "SELECT id, name,description, latitude, longitude  FROM Points Where id = ?";
-            PreparedStatement statement = conn.prepareStatement(sql);
+            PreparedStatement statement = conn.prepareStatement(SELECT_POINT_SQL);
             statement.setInt(1, pointid);
             ResultSet result = statement.executeQuery();
 
@@ -104,21 +111,21 @@ public class PointRepository {
                         .build();
                 return point;
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
         return null;
     }
 
     public void update(Point point) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "UPDATE Points SET name=?, description=?, latitude=?, longitude=? WHERE id=?";
 
-            PreparedStatement statement = conn.prepareStatement(sql);
+
+            PreparedStatement statement = conn.prepareStatement(UPDATE_POINT_SQL);
             statement.setString(1, point.getName());
             statement.setString(2, point.getDescription());
             statement.setString(3, point.getLatitude());
@@ -130,19 +137,19 @@ public class PointRepository {
                 System.out.println("An existing point was updated successfully!");
             }
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
     }
 
     public void delete(int id) {
-        try (Connection conn = DriverManager.getConnection(dbURL, username, password)) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
 
             if (conn != null) {
                 System.out.println("Connected");
             }
-            String sql = "DELETE FROM Points WHERE id=?";
-            PreparedStatement statement = conn.prepareStatement(sql);
+
+            PreparedStatement statement = conn.prepareStatement(DELETE_POINT_SQL);
             statement.setInt(1, id);
 
             int rowsUpdated = statement.executeUpdate();
@@ -150,9 +157,97 @@ public class PointRepository {
                 System.out.println("An existing point was deleted successfully!");
             }
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
         }
+    }
+
+    public void linkCategoryToPoint(int point_id, int category_id) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+            PreparedStatement statement = conn.prepareStatement(LINK_POINT_TO_CATEGORY);
+            statement.setInt(1, point_id);
+            statement.setInt(2, category_id);
+            ResultSet result = statement.executeQuery();
+
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
+
+        }
+    }
+
+    public List<Category> getCategoryList(int point_id) {
+        List<Category> categoryList = new ArrayList<>();
+
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+            PreparedStatement statement = conn.prepareStatement(FIND_LIST_CATEGORIES_OF_POINT);
+            statement.setInt(1, point_id);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                int id = result.getInt("id");
+                String name = result.getString("name");
+                String description = result.getString("description");
+
+                Category category = Category.builder()
+                        .id(id)
+                        .name(name)
+                        .description(description)
+                        .build();
+                categoryList.add(category);
+            }
+
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
+
+        }
+        return categoryList;
 
     }
+
+    public List<Point> getPointsList(int category_id) {
+        List<Point> pointsList = new ArrayList<>();
+
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+            PreparedStatement statement = conn.prepareStatement(FIND_LIST_POINTS_OF_CATEGORY);
+            statement.setInt(1, category_id);
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                int id = result.getInt("id");
+                String name = result.getString("name");
+                String description = result.getString("description");
+                String latitude = result.getString("latitude");
+                String longitude = result.getString("longitude");
+
+                //String output = "User #%d: %s - %s - %s - %s";
+                //  System.out.println(String.format(output, ++count, name, description, latitude, longitude));
+                Point point = Point.builder()
+                        .id(id)
+                        .name(name)
+                        .description(description)
+                        .latitude(latitude)
+                        .longitude(longitude)
+                        .build();
+                pointsList.add(point);
+            }
+
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
+
+        }
+        return pointsList;
+
+    }
+
 }
