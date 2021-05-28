@@ -1,11 +1,13 @@
 package org.itcluster11.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
 
 @Data
-@Setter
-public class PointCategory {
+@Builder
+public class Category {
+    private int id;
     private String name;
     private String description;
 
