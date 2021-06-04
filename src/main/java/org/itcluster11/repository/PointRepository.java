@@ -64,8 +64,6 @@ public class PointRepository {
                 String latitude = result.getString("latitude");
                 String longitude = result.getString("longitude");
 
-                String output = "User #%d: %s - %s - %s - %s";
-                //  System.out.println(String.format(output, ++count, name, description, latitude, longitude));
                 Point point = Point.builder()
                         .id(id)
                         .name(name)
@@ -100,14 +98,13 @@ public class PointRepository {
                 String latitude = result.getString("latitude");
                 String longitude = result.getString("longitude");
 
-                String output = "User #%d: %s - %s - %s - %s";
-                //  System.out.println(String.format(output, ++count, name, description, latitude, longitude));
                 Point point = Point.builder()
                         .id(id)
                         .name(name)
                         .description(description)
                         .latitude(latitude)
                         .longitude(longitude)
+                        .categories(getCategoryList(pointid))
                         .build();
                 return point;
             }
