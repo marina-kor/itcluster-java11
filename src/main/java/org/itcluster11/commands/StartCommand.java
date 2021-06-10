@@ -15,26 +15,14 @@ import java.util.List;
 
 @Slf4j
 public class StartCommand extends ServiceCommand {
-    private final ReplyKeyboardMarkup replyKeyboardMarkup;
 
-    public StartCommand(String identifier, String description, ReplyKeyboardMarkup replyKeyboardMarkup) {
+    public StartCommand(String identifier, String description) {
         super(identifier, description);
-        this.replyKeyboardMarkup = replyKeyboardMarkup;
     }
 
     @Override
     void sendAnswer(AbsSender absSender, Long chatId, String commandName, String userName, String text) {
-        var message = new SendMessage();
-        message.enableMarkdown(true);
-        message.setChatId(chatId.toString());
-        message.setText(text);
-        message.setReplyMarkup(replyKeyboardMarkup);
-        keyBoardBuild(replyKeyboardMarkup);
-        try {
-            absSender.execute(message);
-        } catch (TelegramApiException e) {
-            log.error(String.format("Warning %s. Command %s. User: %s", e.getMessage(), commandName, userName), e);
-        }
+
     }
 
     @Override

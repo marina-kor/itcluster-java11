@@ -21,6 +21,8 @@ public class PointRepository {
             " = p.id JOIN Category c ON c.id = ptc.category_id WHERE p.id = ?";
     private String FIND_LIST_POINTS_OF_CATEGORY = "SELECT p.* FROM Category c JOIN PointToCategory ptc ON ptc.category_id"
             +" = c.id JOIN Points p ON p.id = ptc.point_id WHERE c.id = ?";
+    private String FIND_LIST_POINTS_OF_CATEGORIES_TEMPLATE = "SELECT DISTINCT p.* FROM Category c JOIN PointToCategory ptc ON ptc.category_id"
+            +" = c.id JOIN Points p ON p.id = ptc.point_id WHERE c.id IN (";
 
     public void save(Point point) {
         try (Connection conn = ConnectionProvider.getConnection()) {
@@ -168,7 +170,7 @@ public class PointRepository {
             PreparedStatement statement = conn.prepareStatement(LINK_POINT_TO_CATEGORY);
             statement.setInt(1, point_id);
             statement.setInt(2, category_id);
-            ResultSet result = statement.executeQuery();
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             log.debug("Reason: ", e);
@@ -245,6 +247,66 @@ public class PointRepository {
         }
         return pointsList;
 
+    }
+
+    public List<Point> findPointsByCategories(List <Category> categories){
+        List<Point> points=new ArrayList<>();
+
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(FIND_LIST_POINTS_OF_CATEGORIES_TEMPLATE);
+            for(int i=0; i<categories.size(); i++) {
+                sb.append("?,");
+            }
+            sb.deleteCharAt(sb.length()-1);
+            sb.append(");");
+            log.info(sb.toString());
+            PreparedStatement statement = conn.prepareStatement(sb.toString());
+
+            for(int i=1; i<=categories.size(); i++) {
+                statement.setInt(i, categories.get(i-1).getId());
+            }
+
+
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                int id = result.getInt("id");
+                String name = result.getString("name");
+                String description = result.getString("description");
+                String latitude = result.getString("latitude");
+                String longitude = result.getString("longitude");
+
+                Point point = Point.builder()
+                        .id(id)
+                        .name(name)
+                        .description(description)
+                        .latitude(latitude)
+                        .longitude(longitude)
+                        .build();
+                points.add(point);
+            }
+
+        } catch (SQLException e) {
+            log.info("Reason: ", e);
+
+        }
+
+        return points;
+
+    }
+
+    private Object[] extractCategoriesId(List<Category> categories) {
+        List<Integer> ids = new ArrayList<>();
+        for(Category category: categories) {
+            ids.add(category.getId());
+        }
+        return ids.toArray();
     }
 
 }

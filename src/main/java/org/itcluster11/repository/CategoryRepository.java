@@ -15,6 +15,7 @@ public class CategoryRepository {
     private String SELECT_CATEGORY_SQL = "SELECT id, name, description  FROM Category WHERE id = ?";
     private String UPDATE_CATEGORY_SQL = "UPDATE Category SET name=?, description=? WHERE id=?";
     private String DELETE_CATEGORY_SQL = "DELETE FROM Category WHERE  id=?";
+    private String SELECT_CATEGORY_SQL_BY_NAME = "SELECT id, name, description  FROM Category WHERE name = ?";
 
     public void save(Category category) {
         try (Connection conn = ConnectionProvider.getConnection()) {
@@ -141,6 +142,37 @@ public class CategoryRepository {
             log.debug("Reason: ", e);
         }
 
+    }
+
+    public Category findByName (String categoryName) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+            PreparedStatement statement = conn.prepareStatement(SELECT_CATEGORY_SQL_BY_NAME);
+            statement.setString(1, categoryName);
+            ResultSet result = statement.executeQuery();
+
+            int count = 0;
+
+            while (result.next()) {
+                int id = result.getInt("id");
+                String name = result.getString("name");
+                String description = result.getString("description");
+
+                String output = "User #%d: %s - %s - %s - %s";
+                Category category = Category.builder()
+                        .id(id)
+                        .name(name)
+                        .description(description)
+                        .build();
+                return category;
+            }
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
+        }
+        return null;
     }
 
 }

@@ -33,17 +33,16 @@ CREATE TABLE SearchConfig(
     `radius` varchar(100),
     `lng` varchar(10),
     `lat` varchar(10),
+    `userId` int,
     PRIMARY KEY (`id`)
 );
 
 CREATE TABLE SearchConfigToCategory ( 
-    `profile_id` int NOT NULL ,
+    `searchConfig_id` int NOT NULL ,
     `category_id` int NOT NULL ,
-    FOREIGN KEY (profile_id) REFERENCES  SearchConfig (id),
-    FOREIGN KEY (category_id) REFERENCES Category (id)
-    
+    FOREIGN KEY (searchConfig_id) REFERENCES  SearchConfig (id),
+    FOREIGN KEY (category_id) REFERENCES Category (id)  
 );
-
 
 
 

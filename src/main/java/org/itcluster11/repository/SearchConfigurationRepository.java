@@ -15,11 +15,14 @@ import java.util.List;
 @Slf4j
 public class SearchConfigurationRepository {
 
-    private String INSERT_SEARCH_CONFIGURATION_SQL = "INSERT INTO SearchConfig (radius, lng, lat) VALUES (?, ?, ?)";
-    private String SELECT_SEARCH_CONFIGURATION_SQL = "SELECT id, radius, lng, lat FROM SearchConfig Where id = ?";
+    private String INSERT_SEARCH_CONFIGURATION_SQL = "INSERT INTO SearchConfig (radius, lng, lat, userId) VALUES (?, ?, ?, ?)";
+    private String SELECT_SEARCH_CONFIGURATION_SQL = "SELECT id, radius, lng, lat, userId FROM SearchConfig Where id = ?";
     private String LINK_SEARCH_CONFIGURATION_TO_CATEGORY = "INSERT INTO SearchConfigToCategory (searchConfig_id , category_id) VALUES (?, ?)";
     private String FIND_LIST_CATEGORIES_OF_SEARCH_CONFIGURATION = "SELECT c.* FROM SearchConfig sc JOIN SearchConfigToCategory sctc ON sctc.searchConfig_id" +
             " = sc.id JOIN Category c ON c.id = sctc.category_id WHERE sc.id = ?";
+    private String SELECT_SEARCH_CONFIGURATION_SQL_USERID = "SELECT id, radius, lng, lat, userId FROM SearchConfig Where userId = ?";
+    private String UNLINK_SEAERCH_CONFIGURATION_TO_CATEGORY ="DELETE FROM SearchConfigToCategory WHERE \n" +
+            " searchConfig_id = ? AND category_id  = ?";
 
     public void save(SearchConfiguration searchConfiguration) {
         try (Connection conn = ConnectionProvider.getConnection()) {
@@ -32,6 +35,7 @@ public class SearchConfigurationRepository {
             statement.setInt(1, searchConfiguration.getRadius());
             statement.setDouble(2, searchConfiguration.getLng());
             statement.setDouble(3, searchConfiguration.getLat());
+            statement.setLong(4, searchConfiguration.getUserId());
 
             int rowsInserted = statement.executeUpdate();
 
@@ -67,12 +71,14 @@ public class SearchConfigurationRepository {
                 int radius = result.getInt("radius");
                 Double lng = result.getDouble("lng");
                 Double lat = result.getDouble("lat");
+                Long userId= result.getLong("userId");
 
                 SearchConfiguration searchConfiguration = SearchConfiguration.builder()
                         .id(id)
                         .radius(radius)
                         .lng(lng)
                         .lat(lat)
+                        .userId(userId)
                         .categories(getCategoryList(searchConfigId))
                         .build();
                 return searchConfiguration;
@@ -92,10 +98,27 @@ public class SearchConfigurationRepository {
             PreparedStatement statement = conn.prepareStatement(LINK_SEARCH_CONFIGURATION_TO_CATEGORY);
             statement.setInt(1, searchConfig_id);
             statement.setInt(2, category_id);
-            ResultSet result = statement.executeQuery();
+            statement.executeUpdate();
 
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.info("Reason: ", e);
+
+        }
+    }
+
+    public void unLinkSearchConfigurationToCategory(int searchConfig_id, int category_id) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+            PreparedStatement statement = conn.prepareStatement(UNLINK_SEAERCH_CONFIGURATION_TO_CATEGORY);
+            statement.setInt(1, searchConfig_id);
+            statement.setInt(2, category_id);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            log.info("Reason: ", e);
 
         }
     }
@@ -130,6 +153,39 @@ public class SearchConfigurationRepository {
         }
         return categoryList;
 
+    }
+
+    public SearchConfiguration findByUserId(long searchConfigUserId) {
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+            PreparedStatement statement = conn.prepareStatement(SELECT_SEARCH_CONFIGURATION_SQL_USERID);
+            statement.setLong(1, searchConfigUserId);
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                int id = result.getInt("id");
+                int radius = result.getInt("radius");
+                Double lng = result.getDouble("lng");
+                Double lat = result.getDouble("lat");
+                Long userId= result.getLong("userId");
+
+                SearchConfiguration searchConfiguration = SearchConfiguration.builder()
+                        .id(id)
+                        .radius(radius)
+                        .lng(lng)
+                        .lat(lat)
+                        .userId(userId)
+                        .categories(getCategoryList(id))
+                        .build();
+                return searchConfiguration;
+            }
+        } catch (SQLException e) {
+            log.debug("Reason: ", e);
+        }
+        return null;
     }
 
 }
