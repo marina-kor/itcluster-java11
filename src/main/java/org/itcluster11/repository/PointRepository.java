@@ -3,6 +3,7 @@ package org.itcluster11.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.itcluster11.model.Category;
 import org.itcluster11.model.Point;
+import org.itcluster11.model.SearchConfiguration;
 import org.itcluster11.util.ConnectionProvider;
 
 import java.sql.*;
@@ -300,13 +301,4 @@ public class PointRepository {
         return points;
 
     }
-
-    private Object[] extractCategoriesId(List<Category> categories) {
-        List<Integer> ids = new ArrayList<>();
-        for(Category category: categories) {
-            ids.add(category.getId());
-        }
-        return ids.toArray();
-    }
-
 }

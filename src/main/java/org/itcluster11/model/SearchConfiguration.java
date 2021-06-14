@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @Builder
 public class SearchConfiguration {
-    private List<Category> categories; //-> midle -> category
+    private List<Category> categories; //-> middle -> category
     private int id;
     private int radius;
     private double lat;
