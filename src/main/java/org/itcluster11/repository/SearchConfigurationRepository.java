@@ -5,10 +5,7 @@ import org.itcluster11.model.Category;
 import org.itcluster11.model.SearchConfiguration;
 import org.itcluster11.util.ConnectionProvider;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +13,7 @@ import java.util.List;
 public class SearchConfigurationRepository {
 
     private String INSERT_SEARCH_CONFIGURATION_SQL = "INSERT INTO SearchConfig (radius, lng, lat, userId) VALUES (?, ?, ?, ?)";
+    private String UPDATE_SEARCH_CONFIGURATION_SQL = "UPDATE SearchConfig SET radius=?, lng=?, lat=?, userId=? WHERE id=?";
     private String SELECT_SEARCH_CONFIGURATION_SQL = "SELECT id, radius, lng, lat, userId FROM SearchConfig Where id = ?";
     private String LINK_SEARCH_CONFIGURATION_TO_CATEGORY = "INSERT INTO SearchConfigToCategory (searchConfig_id , category_id) VALUES (?, ?)";
     private String FIND_LIST_CATEGORIES_OF_SEARCH_CONFIGURATION = "SELECT c.* FROM SearchConfig sc JOIN SearchConfigToCategory sctc ON sctc.searchConfig_id" +
@@ -31,13 +29,22 @@ public class SearchConfigurationRepository {
                 System.out.println("Connected");
             }
 
-            PreparedStatement statement = conn.prepareStatement(INSERT_SEARCH_CONFIGURATION_SQL);
+            PreparedStatement statement;
+            if (searchConfiguration.getId() == 0) {
+                statement = conn.prepareStatement(INSERT_SEARCH_CONFIGURATION_SQL, Statement.RETURN_GENERATED_KEYS);
+            } else {
+                statement = conn.prepareStatement(UPDATE_SEARCH_CONFIGURATION_SQL, Statement.RETURN_GENERATED_KEYS);
+                statement.setInt(5, searchConfiguration.getId());
+            }
             statement.setInt(1, searchConfiguration.getRadius());
             statement.setDouble(2, searchConfiguration.getLng());
             statement.setDouble(3, searchConfiguration.getLat());
             statement.setLong(4, searchConfiguration.getUserId());
 
+
             int rowsInserted = statement.executeUpdate();
+
+
 
             if (rowsInserted > 0) {
                 System.out.println("A new search configuration was inserted successfully!");
@@ -50,8 +57,10 @@ public class SearchConfigurationRepository {
             for (Category category : searchConfiguration.getCategories()) {
                 linkSearchConfigurationToCategory(searchConfiguration.getId(), category.getId());
             }
+
+            conn.commit();
         } catch (SQLException e) {
-            log.debug("Search configuration was not inserted to database", e);
+            log.error("Search configuration was not inserted to database", e);
         }
     }
 
@@ -84,7 +93,7 @@ public class SearchConfigurationRepository {
                 return searchConfiguration;
             }
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
         }
         return null;
     }
@@ -118,7 +127,7 @@ public class SearchConfigurationRepository {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            log.info("Reason: ", e);
+            log.error("Reason: ", e);
 
         }
     }
@@ -148,7 +157,7 @@ public class SearchConfigurationRepository {
             }
 
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
 
         }
         return categoryList;
@@ -183,7 +192,7 @@ public class SearchConfigurationRepository {
                 return searchConfiguration;
             }
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
         }
         return null;
     }

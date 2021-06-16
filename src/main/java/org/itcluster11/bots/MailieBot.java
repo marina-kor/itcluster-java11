@@ -30,20 +30,42 @@ public class MailieBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
-        String categoryName = update.getMessage().getText();
+
         Long userId = update.getMessage().getFrom().getId();
         String chatId = update.getMessage().getChatId().toString();
         String text = "";
-        Location location = update.getMessage().getLocation();
-        if (location != null) {
+
+        if (isLocationMessage(update)) {
+            Location location = update.getMessage().getLocation();
             Double lng = location.getLongitude();
             Double lat = location.getLatitude();
             text = viewService.processLocation(lng, lat, userId);
+        } else if (isRadiusMessage(update)) {
+            int radius = Integer.valueOf(update.getMessage().getText());
+            text = viewService.processRadius(userId, radius);
+
         } else {
+            String categoryName = update.getMessage().getText();
             text = viewService.processCategory(categoryName, userId);
         }
 
         sendAnswer(chatId, text);
+    }
+
+    private boolean isLocationMessage(Update update) {
+        return update.getMessage().getLocation() != null;
+    }
+
+    private boolean isRadiusMessage(Update update) {
+        String message = update.getMessage().getText();
+
+        try {
+            Integer.valueOf(message);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
     }
 
 

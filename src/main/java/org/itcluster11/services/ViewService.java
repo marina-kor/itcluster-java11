@@ -14,13 +14,25 @@ public class ViewService {
     UserService userService = new UserService();
 
     public String processLocation(Double latitude, Double longitude, Long userId) {
-        SearchConfiguration config = userService.getConfig(userId);
-        List<Point> points = pointRepository.findPointsByCategories(config.getCategories());
+        SearchConfiguration config = userService.refreshSearchConfiguration(userId, longitude, latitude);
+        return searchResult(config);
+    }
 
+    private String searchResult(SearchConfiguration config) {
+        if (config.getLng() == 0 && config.getLat() == 0) {
+            return "Будь ласка, надійшліть локацію та радіус пошуку";
+        }
+
+        if (config.getCategories().isEmpty()) {
+            return "Будь ласка, оберіть категорію пошуку";
+        }
+
+
+        List<Point> points = pointRepository.findPointsBySearchConfig(config);
         return "Зараз вибрані категорії: \n"
                 + formatCategoryList(config.getCategories()) + "\n"
                 + " Пошук виконується в області: \n"
-                + " - " + latitude + ", " + longitude + " \n"
+                + " - " + config.getLat() + ", " + config.getLng() + " \n"
                 + " З радіусом: " + config.getRadius() + "\n"
                 + " Знайдені локації: \n"
                 + formatPointList(points);
@@ -31,14 +43,15 @@ public class ViewService {
         if (category == null) {
             return "Невідома категорія";
         }
-
         SearchConfiguration config = userService.refreshSearchConfiguration(userId, category);
-        List<Point> points = pointRepository.findPointsByCategories(config.getCategories());
 
-        return "Зараз вибрані категорії: \n"
-                + formatCategoryList(config.getCategories())
-                + " Знайдені локації: \n"
-                + formatPointList(points);
+        return searchResult(config);
+    }
+
+    public String processRadius(Long userId, int radius) {
+        SearchConfiguration config = userService.refreshSearchConfiguration(userId, radius);
+
+        return searchResult(config);
     }
 
     private String formatCategoryList(List<Category> categories) {

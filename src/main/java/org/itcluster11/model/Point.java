@@ -11,8 +11,8 @@ public class Point {
     private int id;
     private String name;
     private String description;
-    private String longitude;
-    private String latitude;
+    private Double longitude;
+    private Double latitude;
     private List<Category> categories;
 
 }

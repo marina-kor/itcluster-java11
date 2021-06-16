@@ -33,7 +33,7 @@ public class CategoryRepository {
                 System.out.println("A new point category was inserted successfully!");
             }
         } catch (SQLException e) {
-            log.debug("Point category was not inserted to database", e);
+            log.error("Point category was not inserted to database", e);
         }
     }
 
@@ -64,7 +64,7 @@ public class CategoryRepository {
                 categories.add(category);
             }
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
         }
         return categories;
     }
@@ -95,7 +95,7 @@ public class CategoryRepository {
                 return category;
             }
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
         }
         return null;
     }
@@ -119,7 +119,7 @@ public class CategoryRepository {
             }
 
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
         }
     }
 
@@ -139,7 +139,7 @@ public class CategoryRepository {
             }
 
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
         }
 
     }
@@ -170,7 +170,7 @@ public class CategoryRepository {
                 return category;
             }
         } catch (SQLException e) {
-            log.debug("Reason: ", e);
+            log.error("Reason: ", e);
         }
         return null;
     }

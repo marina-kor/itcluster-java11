@@ -32,6 +32,26 @@ public class UserService {
         return config;
     }
 
+    public SearchConfiguration refreshSearchConfiguration(Long userId, Double longitude, Double latitude) {
+        SearchConfiguration config = getConfig(userId);
+
+        config.setLng(longitude);
+        config.setLat(latitude);
+
+        searchConfigurationRepository.save(config);
+
+        config = searchConfigurationRepository.findById(config.getId());
+        return config;
+    }
+    public SearchConfiguration refreshSearchConfiguration(Long userId, int radius) {
+        SearchConfiguration config = getConfig(userId);
+
+        config.setRadius(radius);
+
+        searchConfigurationRepository.save(config);
+        config = searchConfigurationRepository.findById(config.getId());
+        return config;}
+
     public SearchConfiguration getConfig(Long userId) {
         SearchConfiguration config = searchConfigurationRepository.findByUserId(userId);
 
