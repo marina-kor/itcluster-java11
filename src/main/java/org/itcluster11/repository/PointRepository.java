@@ -29,6 +29,11 @@ public class PointRepository {
             " - RADIANS( ? ) ) + SIN( RADIANS( ?) )* SIN( RADIANS( p.latitude ) )" +
             "  ) * 6371 ) AS distance_in_km FROM Points p HAVING distance_in_km < ?";
 
+    private String FIND_LIST_POINTS_OF_CATEGORY_AND_RADIUS = "SELECT DISTINCT p.* , ( ACOS( COS( RADIANS( ? ) )" +
+            "* COS( RADIANS( p.latitude ) ) * COS( RADIANS( p.longitude) - RADIANS( ? ) ) + SIN( RADIANS( ?) )" +
+            "* SIN( RADIANS( p.latitude ) ) ) * 6371) AS distance_in_km FROM Category c JOIN PointToCategory ptc ON ptc.category_id  = c.id " +
+            "JOIN Points p ON p.id = ptc.point_id WHERE c.id IN (";
+
     public void save(Point point) {
         try (Connection conn = ConnectionProvider.getConnection()) {
 
@@ -317,9 +322,9 @@ public class PointRepository {
             sb.append(FIND_LIST_POINTS_OF_RADIUS);
 
             PreparedStatement statement = conn.prepareStatement(sb.toString());
-            statement.setDouble(1, searchConfiguration.getLat());
-            statement.setDouble(2, searchConfiguration.getLng());
-            statement.setDouble(3, searchConfiguration.getLat());
+            statement.setDouble(1, searchConfiguration.getLng());
+            statement.setDouble(2, searchConfiguration.getLat());
+            statement.setDouble(3, searchConfiguration.getLng());
             statement.setDouble(4, searchConfiguration.getRadius());
 
             ResultSet result = statement.executeQuery();
@@ -349,5 +354,61 @@ public class PointRepository {
 
         return points;
 
+    }
+
+    public List<Point> findPointsBySearchConfigAndCategories(SearchConfiguration searchConfiguration) {
+        List<Point> points = new ArrayList<>();
+
+        try (Connection conn = ConnectionProvider.getConnection()) {
+
+            if (conn != null) {
+                System.out.println("Connected");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(FIND_LIST_POINTS_OF_CATEGORY_AND_RADIUS);
+
+            for (int i = 0; i < searchConfiguration.getCategories().size(); i++) {
+                sb.append("?,");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append(")HAVING distance_in_km < ?;");
+            log.info(sb.toString());
+            PreparedStatement statement = conn.prepareStatement(sb.toString());
+
+            for (int i = 4; i <= searchConfiguration.getCategories().size() + 3; i++) {
+                statement.setInt(i, searchConfiguration.getCategories().get(i - 4).getId());
+            }
+            statement.setDouble(1, searchConfiguration.getLng());
+            statement.setDouble(2, searchConfiguration.getLat());
+            statement.setDouble(3, searchConfiguration.getLng());
+            statement.setInt(searchConfiguration.getCategories().size() + 4, searchConfiguration.getRadius());
+
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                int id = result.getInt("id");
+                String name = result.getString("name");
+                String description = result.getString("description");
+                Double latitude = result.getDouble("latitude");
+                Double longitude = result.getDouble("longitude");
+
+                Point point = Point.builder()
+                        .id(id)
+                        .name(name)
+                        .description(description)
+                        .latitude(latitude)
+                        .longitude(longitude)
+                        .build();
+                points.add(point);
+            }
+
+        } catch (
+                SQLException e) {
+            log.error("Reason: ", e);
+
+        }
+
+        return points;
     }
 }

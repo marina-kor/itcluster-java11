@@ -54,9 +54,7 @@ public class SearchConfigurationRepository {
                     searchConfiguration.setId(generatedKeys.getInt(1));
                 }
             }
-            for (Category category : searchConfiguration.getCategories()) {
-                linkSearchConfigurationToCategory(searchConfiguration.getId(), category.getId());
-            }
+
 
             conn.commit();
         } catch (SQLException e) {

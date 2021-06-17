@@ -28,7 +28,7 @@ public class ViewService {
         }
 
 
-        List<Point> points = pointRepository.findPointsBySearchConfig(config);
+        List<Point> points = pointRepository.findPointsBySearchConfigAndCategories(config);
         return "Зараз вибрані категорії: \n"
                 + formatCategoryList(config.getCategories()) + "\n"
                 + " Пошук виконується в області: \n"
