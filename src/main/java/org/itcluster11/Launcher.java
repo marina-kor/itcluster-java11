@@ -1,7 +1,7 @@
 package org.itcluster11;
 
 import lombok.extern.slf4j.Slf4j;
-import org.itcluster11.bots.MailieBot;
+import org.itcluster11.telegram.bots.MailieBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;

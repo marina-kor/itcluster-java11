@@ -1,4 +1,4 @@
-package org.itcluster11.services;
+package org.itcluster11.telegram.services;
 
 import org.itcluster11.model.Category;
 import org.itcluster11.model.Point;
@@ -7,6 +7,7 @@ import org.itcluster11.repository.CategoryRepository;
 import org.itcluster11.repository.PointRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ViewService {
     CategoryRepository categoryRepository = new CategoryRepository();
@@ -15,10 +16,10 @@ public class ViewService {
 
     public String processLocation(Double latitude, Double longitude, Long userId) {
         SearchConfiguration config = userService.refreshSearchConfiguration(userId, longitude, latitude);
-        return searchResult(config);
+        return searchResult(config, latitude, longitude);
     }
 
-    private String searchResult(SearchConfiguration config) {
+    private String searchResult(SearchConfiguration config, Double...coordinates) {
         if (config.getLng() == 0 && config.getLat() == 0) {
             return "Будь ласка, надійшліть локацію та радіус пошуку";
         }
@@ -35,8 +36,18 @@ public class ViewService {
                 + " - " + config.getLat() + ", " + config.getLng() + " \n"
                 + " З радіусом: " + config.getRadius() + "\n"
                 + " Знайдені локації: \n"
-                + formatPointList(points);
+                + formatPointList(points) + "\n"
+                + " Посилання для доступу до маршруту: \n"
+                + generateLinkToPath(points, coordinates[0], coordinates[1]);
+
     }
+
+    private String generateLinkToPath(List<Point> points, Double latitude, Double longitude) {
+        return "google.com.ua/maps/dir/"
+                + latitude + "/" + longitude + "/"
+                + points.stream().map(Point::coordidateToString).collect(Collectors.joining("/"));
+    }
+
 
     public String processCategory(String categoryName, Long userId) {
         Category category = categoryRepository.findByName(categoryName);

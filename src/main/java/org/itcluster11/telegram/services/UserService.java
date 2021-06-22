@@ -1,4 +1,4 @@
-package org.itcluster11.services;
+package org.itcluster11.telegram.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.itcluster11.model.Category;

@@ -1,13 +1,12 @@
-package org.itcluster11.bots;
+package org.itcluster11.telegram.bots;
 
 import lombok.extern.slf4j.Slf4j;
-import org.itcluster11.commands.HelpCommand;
-import org.itcluster11.commands.NewTourCommand;
-import org.itcluster11.commands.StartCommand;
-import org.itcluster11.services.ViewService;
+import org.itcluster11.telegram.commands.HelpCommand;
+import org.itcluster11.telegram.commands.NewTourCommand;
+import org.itcluster11.telegram.commands.StartCommand;
+import org.itcluster11.telegram.services.ViewService;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -32,16 +31,16 @@ public class MailieBot extends TelegramLongPollingCommandBot {
     public void processNonCommandUpdate(Update update) {
 
         Long userId = update.getMessage().getFrom().getId();
-        String chatId = update.getMessage().getChatId().toString();
-        String text = "";
+        var chatId = update.getMessage().getChatId().toString();
+        var text = "";
 
         if (isLocationMessage(update)) {
-            Location location = update.getMessage().getLocation();
+            var location = update.getMessage().getLocation();
             Double lng = location.getLongitude();
             Double lat = location.getLatitude();
             text = viewService.processLocation(lng, lat, userId);
         } else if (isRadiusMessage(update)) {
-            int radius = Integer.valueOf(update.getMessage().getText());
+            var radius = Integer.parseInt(update.getMessage().getText());
             text = viewService.processRadius(userId, radius);
 
         } else {
