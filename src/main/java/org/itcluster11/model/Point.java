@@ -15,7 +15,7 @@ public class Point {
     private Double latitude;
     private List<Category> categories;
 
-    public String coordidateToString() {
+    public String coordinateToString() {
         return latitude + "," + longitude;
     }
 

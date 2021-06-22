@@ -45,7 +45,7 @@ public class ViewService {
     private String generateLinkToPath(List<Point> points, Double latitude, Double longitude) {
         return "google.com.ua/maps/dir/"
                 + latitude + "," + longitude + "/"
-                + points.stream().map(Point::coordidateToString).collect(Collectors.joining("/"));
+                + points.stream().map(Point::coordinateToString).collect(Collectors.joining("/"));
     }
 
 
