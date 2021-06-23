@@ -33,7 +33,7 @@ public class ViewService {
         return "Зараз вибрані категорії: \n"
                 + formatCategoryList(config.getCategories()) + "\n"
                 + " Пошук виконується в області: \n"
-                + " - " + config.getLat() + ", " + config.getLng() + " \n"
+                + " - " + config.getLng() + ", " + config.getLat() + " \n"
                 + " З радіусом: " + config.getRadius() + "\n"
                 + " Знайдені локації: \n"
                 + formatPointList(points) + "\n"
@@ -44,7 +44,7 @@ public class ViewService {
 
     private String generateLinkToPath(List<Point> points, Double latitude, Double longitude) {
         return "google.com.ua/maps/dir/"
-                + latitude + "," + longitude + "/"
+                + longitude + "," + latitude + "/"
                 + points.stream().map(Point::coordinateToString).collect(Collectors.joining("/"));
     }
 
